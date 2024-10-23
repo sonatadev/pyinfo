@@ -3,11 +3,10 @@ from tkinter import messagebox, StringVar, Frame
 import requests
 from PIL import Image, ImageTk
 from io import BytesIO
-import html  # Import the html library
+import html
 
 # Constants
 API_URL = 'https://graphql.anilist.co'
-
 
 # Function to query the AniList API
 def query_anilist(query, search_type):
@@ -48,7 +47,6 @@ def query_anilist(query, search_type):
     else:
         raise Exception("Query failed with a {}: {}".format(response.status_code, response.text))
 
-
 # Function to handle search
 def search(event=None):
     search_term = search_entry.get()
@@ -71,7 +69,6 @@ def search(event=None):
     except Exception as e:
         messagebox.showerror("Error", str(e))
 
-
 # Function to display the result
 def display_result(media, search_type):
     if search_type == "Character":
@@ -83,8 +80,8 @@ def display_result(media, search_type):
         description = media['description']
         image_url = media['coverImage']['large']
 
-    description = html.unescape(description)  # Decode HTML entities
-    description = description.replace('<br>', '\n')  # Replace <br> with newline
+    description = html.unescape(description)
+    description = description.replace('<br>', '\n')
 
     title_label.config(text=title)
     description_label.config(text=description)
@@ -98,12 +95,22 @@ def display_result(media, search_type):
     image_label.config(image=img)
     image_label.image = img  # Keep a reference
 
+# Function to exit fullscreen
+def exit_fullscreen(event=None):
+    app.attributes('-fullscreen', False)
+    app.bind("<F11>", lambda e: app.attributes('-fullscreen', True))  # Re-enable fullscreen with F11
+    app.bind("<Escape>", exit_fullscreen)  # Bind Escape key to exit fullscreen
 
 # Setting up the main application window
 app = tk.Tk()
 app.title("AniList Search")
 app.configure(bg="#1e1e1e")
-app.geometry("800x600")  # Increased window size
+
+# Enable fullscreen
+app.attributes('-fullscreen', True)
+
+# Bind keys
+app.bind("<Escape>", exit_fullscreen)
 
 # Header
 header_label = tk.Label(app, text="Search information about any series or character!", font=('Coolvetica', 24),
